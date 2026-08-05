@@ -1,0 +1,9 @@
+{
+    "model": "Random Forest Regressor",
+    "version": "1.0.0",
+    "trained_on": "2026-08-05 00:16:28",
+    "dataset": "Metro Interstate Traffic Volume",
+    "samples": 48187,
+    "features": 30,
+    "target": "traffic_volume"
+}

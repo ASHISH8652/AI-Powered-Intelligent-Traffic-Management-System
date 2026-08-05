@@ -1,0 +1,12 @@
+streamlit
+streamlit-option-menu
+plotly
+opencv-python
+ultralytics
+numpy
+pandas
+matplotlib
+scikit-learn
+Pillow
+joblib
+python-dotenv
