@@ -105,6 +105,9 @@ MODELS = ROOT / "models"
 
 OUTPUTS.mkdir(exist_ok=True)
 
+for _folder in (ASSETS, MODELS, ROOT / "logs"):
+    _folder.mkdir(exist_ok=True, parents=True)
+
 LOGO = ASSETS / "logo.png"
 
 STYLE = ASSETS / "style.css"
@@ -327,6 +330,119 @@ def congestion(vehicle_count):
 def waiting_time(vehicle_count):
 
     return round(vehicle_count*1.6,2)
+
+
+def show_completion_banner(modules=None):
+    """
+    Professional pipeline-completion banner.
+
+    Replaces the old static "AI Pipeline Completed" markdown block with an
+    animated, dark, gradient status card: a pulsing checkmark badge plus a
+    per-module checklist grid. Reads as a finished product rather than a
+    student demo, and needs no external assets or JS libraries.
+    """
+
+    modules = modules or [
+        "Vehicle Detection",
+        "Traffic Analytics",
+        "Traffic Prediction",
+        "Live Monitoring",
+        "AI Report",
+    ]
+
+    checklist_html = "".join(
+        f'<div class="sc-check-item"><span class="sc-check-icon">\u2713</span>{m}</div>'
+        for m in modules
+    )
+
+    st.markdown(
+        f"""
+        <style>
+        @keyframes sc-fade-in {{
+            from {{ opacity: 0; transform: translateY(12px); }}
+            to   {{ opacity: 1; transform: translateY(0); }}
+        }}
+        @keyframes sc-pulse {{
+            0%, 100% {{ box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35); }}
+            50%      {{ box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }}
+        }}
+        .sc-completion-card {{
+            background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            border-radius: 18px;
+            padding: 28px 32px;
+            margin: 14px 0 20px;
+            animation: sc-fade-in 0.5s ease-out;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+        }}
+        .sc-completion-header {{
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }}
+        .sc-completion-badge {{
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #22c55e, #16a34a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            animation: sc-pulse 2s infinite;
+            flex-shrink: 0;
+        }}
+        .sc-completion-title {{
+            color: #e2e8f0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }}
+        .sc-completion-subtitle {{
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin: 2px 0 0;
+        }}
+        .sc-check-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }}
+        .sc-check-item {{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }}
+        .sc-check-icon {{
+            color: #22c55e;
+            font-weight: 800;
+        }}
+        </style>
+
+        <div class="sc-completion-card">
+            <div class="sc-completion-header">
+                <div class="sc-completion-badge">\u2713</div>
+                <div>
+                    <p class="sc-completion-title">AI Pipeline Completed Successfully</p>
+                    <p class="sc-completion-subtitle">All modules processed and ready to review.</p>
+                </div>
+            </div>
+            <div class="sc-check-grid">
+                {checklist_html}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # ==========================================================
 # Header
@@ -821,22 +937,6 @@ if page == "🏠 Home":
 
             status = st.empty()
 
-            for i in range(100):
-
-                progress.progress(i+1)
-
-            status.caption(
-
-            f"Running AI Engine... {i+1}%"
-
-    )
-
-            time.sleep(.02)
-
-            # progress = st.progress(0)
-
-            # status = st.empty()
-
             log_box = st.empty()
 
             logs = []
@@ -868,7 +968,7 @@ if page == "🏠 Home":
 
             progress.progress(100)
 
-            status.success("🚀 Smart City AI Pipeline Completed Successfully")
+            status.empty()
 
             st.toast("Vehicle Detection Ready", icon="🚗")
             st.toast("Traffic Analytics Ready", icon="📊")
@@ -876,24 +976,7 @@ if page == "🏠 Home":
             st.toast("Monitoring Ready", icon="📡")
             st.toast("Report Generated", icon="📄")
 
-            st.success("All AI modules are operational.")
-            st.markdown("""
-<div style="
-background:#0f172a;
-padding:20px;
-border-radius:12px;
-border-left:5px solid #22c55e;
-">
-<h3 style="color:#22c55e;">✔ AI Pipeline Completed</h3>
-
-Vehicle Detection ✓<br>
-Traffic Analytics ✓<br>
-Prediction ✓<br>
-Monitoring ✓<br>
-Report Generated ✓
-
-</div>
-""", unsafe_allow_html=True)
+            show_completion_banner()
 
             st.divider()
 
@@ -937,45 +1020,6 @@ Report Generated ✓
             )
 
             st.subheader("🧠 AI Engine")
-            # st.subheader("🧠 AI Engine")
-
-            engine = pd.DataFrame({
-
-    "Module":[
-
-        "YOLOv8",
-
-        "Random Forest",
-
-        "Analytics",
-
-        "Monitoring",
-
-        "Reports"
-
-    ],
-
-            "Status":[
-
-        "🟢 Running",
-
-        "🟢 Loaded",
-
-        "🟢 Active",
-
-        "🟢 Live",
-
-        "🟢 Ready"
-
-    ]
-
-})
-
-            st.dataframe(
-                engine,
-                hide_index=True,
-                use_container_width=True
-)
 
             engine = pd.DataFrame(
                 {
