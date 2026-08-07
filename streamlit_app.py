@@ -36,6 +36,8 @@ import plotly.graph_objects as go
 
 import streamlit as st
 
+from my import congestion, traffic_density, waiting_time
+
 # ==========================================================
 # Optional AI Modules
 # ==========================================================
@@ -776,7 +778,22 @@ elif page == "📊 Analytics":
 
     st.header("📊 Traffic Analytics")
 
+    manager = st.session_state.manager
+
     vehicles = st.session_state.vehicle_count
+
+    analytics_data = None
+    if manager is not None:
+        try:
+            analytics_data = manager.get_live_data()
+        except Exception:
+            analytics_data = None
+
+    if analytics_data is not None:
+        vehicles = analytics_data.get(
+            "vehicle_count",
+            vehicles
+        )
 
     if vehicles == 0:
 
@@ -784,38 +801,27 @@ elif page == "📊 Analytics":
 
     else:
 
-        if vehicles < 20:
-
-            density = "Low"
-
-        elif vehicles < 45:
-
-            density = "Medium"
-
-        else:
-
-            density = "High"
-
-        congestion = min(
-
-            vehicles * 2,
-
-            100
-
-        )
-
-        waiting = congestion * 1.5
-
         analytics = {
-
-            "Vehicle Count": vehicles,
-
-            "Density": density,
-
-            "Congestion": congestion,
-
-            "Waiting Time": waiting
-
+            "vehicle_count": analytics_data.get(
+                "vehicle_count",
+                vehicles
+            ) if analytics_data else vehicles,
+            "traffic_density": analytics_data.get(
+                "traffic_density",
+                traffic_density(vehicles)
+            ) if analytics_data else traffic_density(vehicles),
+            "congestion": analytics_data.get(
+                "congestion",
+                congestion(vehicles)
+            ) if analytics_data else congestion(vehicles),
+            "waiting_time": analytics_data.get(
+                "waiting_time",
+                waiting_time(vehicles)
+            ) if analytics_data else waiting_time(vehicles),
+            "classes": analytics_data.get(
+                "classes",
+                []
+            ) if analytics_data else []
         }
 
         st.session_state.analytics = analytics
@@ -826,7 +832,7 @@ elif page == "📊 Analytics":
 
             "Vehicles",
 
-            vehicles
+            analytics["vehicle_count"]
 
         )
 
@@ -834,7 +840,7 @@ elif page == "📊 Analytics":
 
             "Density",
 
-            density
+            analytics["traffic_density"]
 
         )
 
@@ -842,7 +848,7 @@ elif page == "📊 Analytics":
 
             "Congestion",
 
-            f"{congestion}%"
+            f"{analytics['congestion']}%"
 
         )
 
@@ -850,7 +856,7 @@ elif page == "📊 Analytics":
 
             "Waiting",
 
-            f"{waiting:.1f} sec"
+            f"{analytics['waiting_time']} sec"
 
         )
 

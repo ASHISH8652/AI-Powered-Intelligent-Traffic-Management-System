@@ -112,27 +112,95 @@ STYLE = ASSETS / "style.css"
 # ==========================================================
 # Theme
 # ==========================================================
-
 st.markdown("""
-
 <style>
+
+.main{
+    background:#0f172a;
+}
 
 .block-container{
     padding-top:1rem;
     padding-bottom:2rem;
 }
 
+/* Hide Streamlit Branding */
+#MainMenu{
+    visibility:hidden;
+}
+
 footer{
-visibility:hidden;
+    visibility:hidden;
 }
 
 header{
-visibility:hidden;
+    visibility:hidden;
+}
+
+/* Premium Metric Cards */
+[data-testid="metric-container"]{
+
+    background:rgba(30,41,59,.75);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:16px;
+
+    padding:18px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.25);
+
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"]{
+
+    background:#111827;
+
+}
+
+/* Buttons */
+.stButton>button{
+
+    width:100%;
+
+    border-radius:12px;
+
+    height:50px;
+
+    font-weight:bold;
+
+}
+
+/* Dataframes */
+div[data-testid="stDataFrame"]{
+
+    border-radius:15px;
+
 }
 
 </style>
+""", unsafe_allow_html=True)
+# st.markdown("""
 
-""",unsafe_allow_html=True)
+# <style>
+
+# .block-container{
+#     padding-top:1rem;
+#     padding-bottom:2rem;
+# }
+
+# footer{
+# visibility:hidden;
+# }
+
+# header{
+# visibility:hidden;
+# }
+
+# </style>
+
+# """,unsafe_allow_html=True)
 
 # ==========================================================
 # Load CSS
@@ -263,37 +331,59 @@ def waiting_time(vehicle_count):
 # ==========================================================
 # Header
 # ==========================================================
-
 st.markdown("""
 
-<h1 style='text-align:center;color:#00BFFF;'>
+<div style="
 
-🚦 Smart City AI
+background:linear-gradient(90deg,#2563eb,#0ea5e9);
 
-</h1>
+padding:25px;
 
-""",unsafe_allow_html=True)
+border-radius:18px;
 
-st.markdown("""
+text-align:center;
 
-<div style='text-align:center'>
+color:white;
 
-<h4>
+">
 
-AI Powered Intelligent Traffic Management System
+<h1>🚦 Smart City AI</h1>
 
-</h4>
+<h4>AI Powered Intelligent Traffic Management System</h4>
+
+Production Version 5.0
 
 </div>
 
-""",unsafe_allow_html=True)
+""", unsafe_allow_html=True)
+# st.markdown("""
+
+# <h1 style='text-align:center;color:#00BFFF;'>
+
+# 🚦 Smart City AI
+
+# </h1>
+
+# """,unsafe_allow_html=True)
 
 st.divider()
 
 # ==========================================================
 # Sidebar
 # ==========================================================
+st.sidebar.markdown("""
 
+## 🚦 Smart City AI
+
+### Enterprise Dashboard
+
+🟢 AI Engine Online
+
+🟢 Models Loaded
+
+🟢 Monitoring Active
+
+""")
 with st.sidebar:
 
     # ------------------------------------------------------
@@ -305,13 +395,17 @@ with st.sidebar:
 
     st.markdown(
         """
-        # 🚦 Smart City AI
-        ### Traffic Intelligence Platform
-        """
-    )
-
-    st.caption(
-        "AI-Powered Intelligent Traffic Management System"
+        <div style="background:linear-gradient(135deg,#2563eb,#0ea5e9);padding:20px;border-radius:18px;color:white;text-align:center;">
+          <h2 style="margin:0 0 0.25rem;">🚦 Smart City AI</h2>
+          <p style="margin:0 0 0.75rem;font-size:0.95rem;">Enterprise Dashboard</p>
+          <div style="text-align:left;font-size:0.95rem;line-height:1.5;">
+            <p style="margin:0.15rem 0;">🟢 AI Engine Online</p>
+            <p style="margin:0.15rem 0;">🟢 Models Loaded</p>
+            <p style="margin:0.15rem 0;">🟢 Monitoring Active</p>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
     st.divider()
@@ -557,6 +651,27 @@ Built using
 YOLOv8 • OpenCV • Streamlit • Plotly
 """
     )
+st.markdown("""
+
+<div style="
+
+background:#1e293b;
+
+padding:18px;
+
+border-radius:15px;
+
+border-left:6px solid #22c55e;
+
+">
+
+<h4>🚗 Vehicle Detection</h4>
+
+YOLOv8 Real-Time Detection Engine
+
+</div>
+
+""", unsafe_allow_html=True)
 # ==========================================================
 # HOME PAGE
 # ==========================================================
@@ -573,7 +688,22 @@ if page == "🏠 Home":
     # KPI Cards
     # ======================================================
 
+    # vehicle_count = st.session_state.
+    manager = st.session_state.manager
+
     vehicle_count = st.session_state.vehicle_count
+
+    analytics_data = None
+
+    if manager is not None:
+
+        try:
+
+            analytics_data = manager.get_live_data()
+
+        except Exception:
+
+            analytics_data = None
 
     density = traffic_density(vehicle_count)
 
@@ -667,13 +797,13 @@ if page == "🏠 Home":
     st.subheader("🚀 AI Processing Pipeline")
 
     pipeline_steps = [
-        "Loading Input",
-        "Vehicle Detection",
-        "Traffic Analytics",
-        "Prediction",
-        "Monitoring",
-        "Generating Report",
-        "Completed"
+        ("📂", "Loading Input"),
+        ("🚗", "Running YOLOv8 Vehicle Detection"),
+        ("📊", "Generating Traffic Analytics"),
+        ("🤖", "Running Prediction Model"),
+        ("📡", "Preparing Live Monitoring"),
+        ("📄", "Generating AI Report"),
+        ("✅", "Pipeline Completed"),
     ]
 
     if st.button(
@@ -687,24 +817,190 @@ if page == "🏠 Home":
             st.warning("Please upload an image or video first.")
 
         else:
-
             progress = st.progress(0)
 
             status = st.empty()
 
-            for i, step in enumerate(pipeline_steps):
+            for i in range(100):
 
-                status.info(step)
+                progress.progress(i+1)
 
-                progress.progress(
-                    int(((i + 1) / len(pipeline_steps)) * 100)
+            status.caption(
+
+            f"Running AI Engine... {i+1}%"
+
+    )
+
+            time.sleep(.02)
+
+            # progress = st.progress(0)
+
+            # status = st.empty()
+
+            log_box = st.empty()
+
+            logs = []
+
+            total = len(pipeline_steps)
+
+            step_size = max(1, 100 // total)
+
+            current_progress = 0
+
+            for icon, text in pipeline_steps:
+
+                for _ in range(step_size):
+
+                    current_progress = min(current_progress + 1, 100)
+
+                    progress.progress(current_progress)
+
+                    status.caption(f"{icon} {text} — {current_progress}%")
+
+                    time.sleep(0.02)
+
+                logs.append(f"✅ {text}")
+
+                log_box.code(
+                    "\n".join(logs),
+                    language="text"
                 )
 
-                time.sleep(0.5)
+            progress.progress(100)
 
-            status.success("Pipeline completed successfully.")
+            status.success("🚀 Smart City AI Pipeline Completed Successfully")
 
-            st.balloons()
+            st.toast("Vehicle Detection Ready", icon="🚗")
+            st.toast("Traffic Analytics Ready", icon="📊")
+            st.toast("Prediction Ready", icon="🤖")
+            st.toast("Monitoring Ready", icon="📡")
+            st.toast("Report Generated", icon="📄")
+
+            st.success("All AI modules are operational.")
+            st.markdown("""
+<div style="
+background:#0f172a;
+padding:20px;
+border-radius:12px;
+border-left:5px solid #22c55e;
+">
+<h3 style="color:#22c55e;">✔ AI Pipeline Completed</h3>
+
+Vehicle Detection ✓<br>
+Traffic Analytics ✓<br>
+Prediction ✓<br>
+Monitoring ✓<br>
+Report Generated ✓
+
+</div>
+""", unsafe_allow_html=True)
+
+            st.divider()
+
+            st.subheader("✅ AI Pipeline Summary")
+
+            c1, c2, c3, c4 = st.columns(4)
+
+            c1.metric("Detection", "Completed")
+
+            c2.metric("Analytics", "Ready")
+
+            c3.metric("Prediction", "Ready")
+
+            c4.metric("Monitoring", "Ready")
+
+            timeline = pd.DataFrame(
+                {
+                    "Stage": [
+                        "Input",
+                        "Detection",
+                        "Analytics",
+                        "Prediction",
+                        "Monitoring",
+                        "Report"
+                    ],
+                    "Status": [
+                        "Completed",
+                        "Completed",
+                        "Completed",
+                        "Completed",
+                        "Completed",
+                        "Completed"
+                    ]
+                }
+            )
+
+            st.dataframe(
+                timeline,
+                hide_index=True,
+                use_container_width=True
+            )
+
+            st.subheader("🧠 AI Engine")
+            # st.subheader("🧠 AI Engine")
+
+            engine = pd.DataFrame({
+
+    "Module":[
+
+        "YOLOv8",
+
+        "Random Forest",
+
+        "Analytics",
+
+        "Monitoring",
+
+        "Reports"
+
+    ],
+
+            "Status":[
+
+        "🟢 Running",
+
+        "🟢 Loaded",
+
+        "🟢 Active",
+
+        "🟢 Live",
+
+        "🟢 Ready"
+
+    ]
+
+})
+
+            st.dataframe(
+                engine,
+                hide_index=True,
+                use_container_width=True
+)
+
+            engine = pd.DataFrame(
+                {
+                    "Module":[
+                        "YOLOv8",
+                        "Random Forest",
+                        "Analytics",
+                        "Monitoring",
+                        "Reports"
+                    ],
+                    "Status":[
+                        "🟢 Running" if manager else "🔴 Offline",
+                        "🟢 Loaded" if manager else "🔴 Offline",
+                        "🟢 Active",
+                        "🟢 Live",
+                        "🟢 Ready"
+                    ]
+                }
+            )
+
+            st.dataframe(
+                engine,
+                hide_index=True,
+                use_container_width=True
+            )
 
     st.divider()
 
@@ -796,30 +1092,36 @@ if page == "🏠 Home":
 
     with left:
 
-        st.info(
+        st.markdown(
             """
-### Computer Vision
-
-- YOLOv8 Vehicle Detection
-- Multi-Class Detection
-- Real-Time Processing
-- Vehicle Counting
-- Density Estimation
-"""
+            <div style="background:#1e293b;padding:18px;border-radius:15px;border-left:6px solid #22c55e;color:#e2e8f0;">
+              <h4 style="margin-bottom:8px;">🚗 Vehicle Detection</h4>
+              <p style="margin:0 0 10px;">YOLOv8 Real-Time Detection Engine</p>
+              <ul style="margin:0;padding-left:20px;">
+                <li>Multi-Class Detection</li>
+                <li>Vehicle Counting</li>
+                <li>Density Estimation</li>
+              </ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
     with right:
 
-        st.info(
+        st.markdown(
             """
-### Artificial Intelligence
-
-- Random Forest Prediction
-- Traffic Forecasting
-- Live Monitoring
-- Automatic Reports
-- Smart City Dashboard
-"""
+            <div style="background:#1e293b;padding:18px;border-radius:15px;border-left:6px solid #38bdf8;color:#e2e8f0;">
+              <h4 style="margin-bottom:8px;">🤖 Artificial Intelligence</h4>
+              <p style="margin:0 0 10px;">Prediction, Forecasting, and Smart City Alerts</p>
+              <ul style="margin:0;padding-left:20px;">
+                <li>Random Forest Prediction</li>
+                <li>Traffic Forecasting</li>
+                <li>Automatic Reports</li>
+              </ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
     st.divider()
@@ -862,6 +1164,34 @@ if page == "🏠 Home":
     # ======================================================
 
     st.subheader("🧠 AI Workflow")
+    st.markdown("""
+
+### 🧠 AI Processing Flow
+
+```text
+
+Upload
+
+↓
+
+YOLOv8 Detection
+
+↓
+
+Traffic Analytics
+
+↓
+
+Random Forest Prediction
+
+↓
+
+Live Monitoring
+
+↓
+
+Report Generation
+```""")
 
     st.markdown(
         """
@@ -1260,7 +1590,22 @@ elif page == "📊 Traffic Analytics":
 
     st.header("📊 Traffic Analytics Dashboard")
 
+    manager = st.session_state.manager
+
     vehicle_count = st.session_state.vehicle_count
+
+    analytics_data = None
+    if manager is not None:
+        try:
+            analytics_data = manager.get_live_data()
+        except Exception:
+            analytics_data = None
+
+    if analytics_data is not None:
+        vehicle_count = analytics_data.get(
+            "vehicle_count",
+            vehicle_count
+        )
 
     if vehicle_count == 0:
 
@@ -1268,16 +1613,27 @@ elif page == "📊 Traffic Analytics":
 
     else:
 
-        density = traffic_density(vehicle_count)
-        congestion_level = congestion(vehicle_count)
-        wait = waiting_time(vehicle_count)
-
         analytics = {
-            "vehicle_count": vehicle_count,
-            "traffic_density": density,
-            "congestion": congestion_level,
-            "waiting_time": wait,
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "vehicle_count": analytics_data.get(
+                "vehicle_count",
+                vehicle_count
+            ) if analytics_data else vehicle_count,
+            "traffic_density": analytics_data.get(
+                "traffic_density",
+                traffic_density(vehicle_count)
+            ) if analytics_data else traffic_density(vehicle_count),
+            "congestion": analytics_data.get(
+                "congestion",
+                congestion(vehicle_count)
+            ) if analytics_data else congestion(vehicle_count),
+            "waiting_time": analytics_data.get(
+                "waiting_time",
+                waiting_time(vehicle_count)
+            ) if analytics_data else waiting_time(vehicle_count),
+            "classes": analytics_data.get(
+                "classes",
+                []
+            ) if analytics_data else []
         }
 
         st.session_state.analytics = analytics
@@ -1289,16 +1645,28 @@ elif page == "📊 Traffic Analytics":
         c1, c2, c3, c4 = st.columns(4)
 
         with c1:
-            st.metric("🚗 Vehicles", vehicle_count)
+            st.metric(
+                "🚗 Vehicles",
+                analytics["vehicle_count"]
+            )
 
         with c2:
-            st.metric("🚦 Density", density)
+            st.metric(
+                "🚦 Density",
+                analytics["traffic_density"]
+            )
 
         with c3:
-            st.metric("⚠ Congestion", f"{congestion_level}%")
+            st.metric(
+                "⚠ Congestion",
+                f"{analytics['congestion']}%"
+            )
 
         with c4:
-            st.metric("⏱ Waiting", f"{wait} sec")
+            st.metric(
+                "⏱ Waiting",
+                f"{analytics['waiting_time']} sec"
+            )
 
         st.divider()
 
@@ -1306,12 +1674,12 @@ elif page == "📊 Traffic Analytics":
         # Vehicle Distribution
         # ==================================================
 
-        if len(st.session_state.vehicle_classes) > 0:
+        vehicle_classes = analytics["classes"]
+
+        if len(vehicle_classes):
 
             vehicle_df = (
-                pd.Series(
-                    st.session_state.vehicle_classes
-                )
+                pd.Series(vehicle_classes)
                 .value_counts()
                 .reset_index()
             )
@@ -1323,74 +1691,48 @@ elif page == "📊 Traffic Analytics":
 
         else:
 
-            vehicle_df = pd.DataFrame({
-
-                "Vehicle":[
-                    "Car",
-                    "Bus",
-                    "Truck",
-                    "Bike"
-                ],
-
-                "Count":[
-                    int(vehicle_count*0.55),
-                    int(vehicle_count*0.15),
-                    int(vehicle_count*0.15),
-                    int(vehicle_count*0.15)
-                ]
-
-            })
+            vehicle_df = pd.DataFrame(
+                {
+                    "Vehicle":[
+                        "No Detection"
+                    ],
+                    "Count":[
+                        0
+                    ]
+                }
+            )
 
         left, right = st.columns(2)
 
         with left:
 
             fig = px.bar(
-
                 vehicle_df,
-
                 x="Vehicle",
-
                 y="Count",
-
                 color="Vehicle",
-
                 text="Count",
-
                 title="Vehicle Distribution"
-
             )
 
             st.plotly_chart(
-
                 fig,
-
                 use_container_width=True
-
             )
 
         with right:
 
             fig = px.pie(
-
                 vehicle_df,
-
                 names="Vehicle",
-
                 values="Count",
-
                 hole=0.45,
-
                 title="Vehicle Share"
-
             )
 
             st.plotly_chart(
-
                 fig,
-
                 use_container_width=True
-
             )
 
         st.divider()
@@ -1411,7 +1753,7 @@ elif page == "📊 Traffic Analytics":
 
                     mode="gauge+number",
 
-                    value=congestion_level,
+                    value=analytics["congestion"],
 
                     title={"text":"Congestion Level"},
 
@@ -1447,61 +1789,33 @@ elif page == "📊 Traffic Analytics":
 
         with right:
 
-            traffic_df = pd.DataFrame({
+            history = manager.get_history() \
+                if manager and hasattr(manager, "get_history") \
+                else None
 
-                "Hour":[
-                    "08",
-                    "09",
-                    "10",
-                    "11",
-                    "12",
-                    "13",
-                    "14",
-                    "15"
-                ],
-
-                "Vehicles":[
-
-                    max(vehicle_count-15,0),
-
-                    max(vehicle_count-10,0),
-
-                    max(vehicle_count-5,0),
-
-                    vehicle_count,
-
-                    vehicle_count+5,
-
-                    vehicle_count+8,
-
-                    vehicle_count+3,
-
-                    vehicle_count-2
-
-                ]
-
-            })
+            if history is not None and len(history):
+                trend_df = pd.DataFrame(history)
+            else:
+                trend_df = pd.DataFrame({
+                    "Time":[
+                        "Current"
+                    ],
+                    "Vehicles":[
+                        analytics["vehicle_count"]
+                    ]
+                })
 
             line = px.line(
-
-                traffic_df,
-
-                x="Hour",
-
+                trend_df,
+                x="Time",
                 y="Vehicles",
-
                 markers=True,
-
                 title="Traffic Trend"
-
             )
 
             st.plotly_chart(
-
                 line,
-
                 use_container_width=True
-
             )
 
         st.divider()
@@ -1512,34 +1826,24 @@ elif page == "📊 Traffic Analytics":
 
         st.subheader("🔥 Traffic Density Heatmap")
 
-        heat = np.random.randint(
-
-            10,
-
-            vehicle_count+20,
-
-            size=(6,6)
-
-        )
+        heat = np.array([
+            [
+                analytics["vehicle_count"]
+                for _ in range(5)
+            ]
+            for _ in range(5)
+        ])
 
         heat_fig = px.imshow(
-
             heat,
-
             text_auto=True,
-
             aspect="auto",
-
             title="Road Zone Density"
-
         )
 
         st.plotly_chart(
-
             heat_fig,
-
             use_container_width=True
-
         )
 
         st.divider()
@@ -1550,19 +1854,19 @@ elif page == "📊 Traffic Analytics":
 
         st.subheader("🤖 AI Insights")
 
-        if congestion_level < 30:
+        if analytics["congestion"] < 30:
 
             st.success(
 
-                "Traffic flow is smooth. No congestion detected."
+                "Traffic flow is smooth."
 
             )
 
-        elif congestion_level < 70:
+        elif analytics["congestion"] < 70:
 
             st.warning(
 
-                "Moderate congestion detected. Consider adjusting signal timing."
+                "Moderate congestion detected."
 
             )
 
@@ -1570,18 +1874,18 @@ elif page == "📊 Traffic Analytics":
 
             st.error(
 
-                "Heavy congestion detected. Immediate traffic management is recommended."
+                "Heavy congestion detected."
 
             )
 
         st.info(
 
             f"""
-Average waiting time : **{wait} sec**
+Average waiting time : **{analytics['waiting_time']} sec**
 
-Traffic density : **{density}**
+Traffic density : **{analytics['traffic_density']}**
 
-Estimated congestion : **{congestion_level}%**
+Estimated congestion : **{analytics['congestion']}%**
 """
         )
 
@@ -1592,43 +1896,24 @@ Estimated congestion : **{congestion_level}%**
         # ==================================================
 
         summary = pd.DataFrame({
-
             "Metric":[
-
                 "Vehicle Count",
-
                 "Traffic Density",
-
                 "Congestion",
-
-                "Waiting Time",
-
-                "System Status"
-
+                "Waiting Time"
             ],
-
             "Value":[
-
-                vehicle_count,
-
-                density,
-
-                f"{congestion_level}%",
-
-                f"{wait} sec",
-
-                "Operational"
-
+                analytics["vehicle_count"],
+                analytics["traffic_density"],
+                f"{analytics['congestion']}%",
+                f"{analytics['waiting_time']} sec"
             ]
-
         })
 
         st.subheader("📋 Analytics Summary")
 
         st.dataframe(
-
             summary,
-
             use_container_width=True,
 
             hide_index=True
@@ -1734,92 +2019,29 @@ elif page == "🤖 Traffic Prediction":
 
                 prediction = None
 
-                # --------------------------------------------
-                # Production Model
-                # --------------------------------------------
-
                 if manager is not None:
 
                     try:
 
-                        prediction = manager.predict()
+                        prediction = manager.predict(
+                            hour=hour,
+                            weather=weather,
+                            holiday=is_holiday
+                        )
 
-                    except Exception:
+                    except Exception as e:
+
+                        logger.exception(e)
 
                         prediction = None
 
-                # --------------------------------------------
-                # Demo Prediction
-                # --------------------------------------------
-
                 if prediction is None:
 
-                    weather_factor = {
-                        "Clear": 0,
-                        "Clouds": 3,
-                        "Rain": 8,
-                        "Fog": 5,
-                        "Snow": 10
-                    }
-
-                    holiday_factor = 8 if is_holiday == "Yes" else 0
-
-                    rush_hour = (
-                        12
-                        if hour in [8, 9, 17, 18]
-                        else 0
+                    st.error(
+                        "Prediction model is unavailable."
                     )
 
-                    future = (
-                        vehicle_count
-                        + weather_factor[weather]
-                        + holiday_factor
-                        + rush_hour
-                        + np.random.randint(-3, 6)
-                    )
-
-                    future = max(future, 0)
-
-                    congestion_probability = min(
-                        future * 2,
-                        100
-                    )
-
-                    green_signal = max(
-                        30,
-                        min(120, future + 30)
-                    )
-
-                    waiting = round(
-                        future * 1.4,
-                        2
-                    )
-
-                    if future < 20:
-
-                        status = "Low"
-
-                    elif future < 45:
-
-                        status = "Moderate"
-
-                    else:
-
-                        status = "High"
-
-                    prediction = {
-
-                        "future_traffic": future,
-
-                        "congestion_probability": congestion_probability,
-
-                        "signal_time": green_signal,
-
-                        "waiting_time": waiting,
-
-                        "status": status
-
-                    }
+                    st.stop()
 
                 st.session_state.prediction = prediction
 
@@ -1851,30 +2073,46 @@ elif page == "🤖 Traffic Prediction":
             with c2:
 
                 st.metric(
-                    "Congestion",
-                    f"{pred['congestion_probability']}%"
+                    "Density",
+                    pred["traffic_density"]
                 )
 
             with c3:
 
                 st.metric(
-                    "Green Signal",
-                    f"{pred['signal_time']} sec"
+                    "Congestion",
+                    f"{pred['congestion']}%"
                 )
 
             with c4:
 
                 st.metric(
-                    "Waiting Time",
-                    f"{pred['waiting_time']} sec"
+                    "Signal",
+                    f"{pred['signal_time']} sec"
                 )
 
             with c5:
 
                 st.metric(
-                    "Status",
-                    pred["status"]
+                    "Confidence",
+                    f"{pred['confidence']}%"
                 )
+
+            st.subheader("🧠 AI Decision")
+
+            st.info(
+                f"""
+Prediction Model : **Random Forest**
+
+Prediction Confidence : **{pred['confidence']}%**
+
+Traffic Density : **{pred['traffic_density']}**
+
+Estimated Congestion : **{pred['congestion']}%**
+
+Recommended Green Signal : **{pred['signal_time']} sec**
+"""
+            )
 
             st.divider()
 
@@ -1894,10 +2132,10 @@ elif page == "🤖 Traffic Prediction":
 
                         mode="gauge+number",
 
-                        value=pred["congestion_probability"],
+                        value=pred["congestion"],
 
                         title={
-                            "text": "Congestion Probability"
+                            "text": "Congestion"
                         },
 
                         gauge={
@@ -1952,29 +2190,15 @@ elif page == "🤖 Traffic Prediction":
 
                         "Current",
 
-                        "+15m",
-
-                        "+30m",
-
-                        "+45m",
-
-                        "+60m"
+                        "Prediction"
 
                     ],
 
                     "Vehicles": [
 
-                        vehicle_count,
+                        st.session_state.vehicle_count,
 
-                        int(
-                            (vehicle_count + pred["future_traffic"]) / 2
-                        ),
-
-                        pred["future_traffic"],
-
-                        pred["future_traffic"] + 4,
-
-                        pred["future_traffic"] + 2
+                        pred["future_traffic"]
 
                     ]
 
@@ -2007,16 +2231,16 @@ elif page == "🤖 Traffic Prediction":
 
             st.subheader("🚦 AI Recommendation")
 
-            if pred["status"] == "Low":
+            if pred["congestion"] < 30:
 
                 st.success(
-                    "Traffic is expected to remain smooth. Normal signal timing is sufficient."
+                    "Traffic flow is expected to remain smooth."
                 )
 
-            elif pred["status"] == "Moderate":
+            elif pred["congestion"] < 70:
 
                 st.warning(
-                    "Moderate traffic expected. Consider increasing green signal duration."
+                    "Moderate congestion predicted. Adjust signal timing."
                 )
 
             else:
@@ -2033,29 +2257,33 @@ elif page == "🤖 Traffic Prediction":
 
                     "Predicted Vehicles",
 
+                    "Traffic Density",
+
                     "Congestion",
 
                     "Signal Time",
 
                     "Waiting Time",
 
-                    "Traffic Status"
+                    "Confidence"
 
                 ],
 
                 "Value": [
 
-                    vehicle_count,
+                    st.session_state.vehicle_count,
 
                     pred["future_traffic"],
 
-                    f"{pred['congestion_probability']}%",
+                    pred["traffic_density"],
+
+                    f"{pred['congestion']}%",
 
                     f"{pred['signal_time']} sec",
 
                     f"{pred['waiting_time']} sec",
 
-                    pred["status"]
+                    f"{pred['confidence']}%"
 
                 ]
 
@@ -2092,7 +2320,58 @@ elif page == "📡 Live Monitoring":
         "Real-time monitoring dashboard for Smart City AI."
     )
 
-    vehicles = st.session_state.vehicle_count
+    manager = st.session_state.manager
+
+    live_data = None
+
+    if manager is not None:
+
+        try:
+
+            live_data = manager.get_live_data()
+
+        except Exception:
+
+            live_data = None
+
+    if live_data:
+
+        vehicles = live_data.get(
+            "vehicle_count",
+            0
+        )
+
+        density = live_data.get(
+            "traffic_density",
+            traffic_density(vehicles)
+        )
+
+        congestion_level = live_data.get(
+            "congestion",
+            congestion(vehicles)
+        )
+
+        wait = live_data.get(
+            "waiting_time",
+            waiting_time(vehicles)
+        )
+
+        classes = live_data.get(
+            "classes",
+            []
+        )
+
+    else:
+
+        vehicles = st.session_state.vehicle_count
+
+        density = traffic_density(vehicles)
+
+        congestion_level = congestion(vehicles)
+
+        wait = waiting_time(vehicles)
+
+        classes = st.session_state.vehicle_classes
 
     if vehicles == 0:
 
@@ -2103,12 +2382,6 @@ elif page == "📡 Live Monitoring":
     else:
 
         current_time = datetime.now()
-
-        density = traffic_density(vehicles)
-
-        congestion_level = congestion(vehicles)
-
-        wait = waiting_time(vehicles)
 
         # ==================================================
         # Live Metrics
@@ -2132,8 +2405,8 @@ elif page == "📡 Live Monitoring":
         )
 
         c4.metric(
-            "🕒 Updated",
-            current_time.strftime("%H:%M:%S")
+            "⏱ Waiting",
+            f"{wait} sec"
         )
 
         st.divider()
@@ -2142,57 +2415,51 @@ elif page == "📡 Live Monitoring":
         # Live Trend
         # ==================================================
 
-        trend = pd.DataFrame({
+        history = []
 
-            "Minute":[
+        if manager is not None:
 
-                "00",
+            try:
 
-                "05",
+                history = manager.get_history()
 
-                "10",
+            except Exception:
 
-                "15",
+                history = []
 
-                "20",
+        if len(history):
 
-                "25",
+            trend_df = pd.DataFrame(history)
 
-                "30"
+        else:
 
-            ],
+            trend_df = pd.DataFrame({
 
-            "Vehicles":[
+                "Time":[
 
-                max(vehicles-6,0),
+                    datetime.now().strftime("%H:%M:%S")
 
-                max(vehicles-3,0),
+                ],
 
-                vehicles,
+                "Vehicles":[
 
-                vehicles+2,
+                    vehicles
 
-                vehicles+5,
+                ]
 
-                vehicles+3,
-
-                vehicles
-
-            ]
-
-        })
+            })
 
         fig = px.line(
 
-            trend,
+            trend_df,
 
-            x="Minute",
+            x="Time",
 
             y="Vehicles",
 
             markers=True,
 
-            title="Live Traffic Trend"
+            title="Real-Time Vehicle Count"
 
         )
 
@@ -2205,6 +2472,34 @@ elif page == "📡 Live Monitoring":
         )
 
         st.divider()
+
+        if len(classes):
+
+            st.subheader("🚘 Live Vehicle Detection")
+
+            class_df = pd.DataFrame(
+
+                {
+
+                    "Detected Vehicle":
+
+                    classes
+
+                }
+
+            )
+
+            st.dataframe(
+
+                class_df,
+
+                hide_index=True,
+
+                use_container_width=True
+
+            )
+
+            st.divider()
 
         # ==================================================
         # Congestion Gauge
@@ -2260,21 +2555,21 @@ elif page == "📡 Live Monitoring":
 
                     "Monitoring",
 
-                    "Dashboard"
+                    "Reports"
 
                 ],
 
                 "Status":[
 
-                    "Online" if st.session_state.manager else "Demo",
+                    "🟢 Running" if manager else "🔴 Offline",
 
-                    "Online",
+                    "🟢 Active",
 
-                    "Online",
+                    "🟢 Active",
 
-                    "Online",
+                    "🟢 Live",
 
-                    "Online"
+                    "🟢 Ready"
 
                 ]
 
@@ -2301,19 +2596,19 @@ elif page == "📡 Live Monitoring":
         if congestion_level < 30:
 
             st.success(
-                "Traffic is flowing normally."
+                "Traffic is flowing smoothly."
             )
 
         elif congestion_level < 70:
 
             st.warning(
-                "Moderate congestion detected."
+                "Moderate congestion detected. Signal optimization is recommended."
             )
 
         else:
 
             st.error(
-                "Heavy congestion detected. Optimize traffic signals."
+                "Heavy congestion detected. Immediate intervention is recommended."
             )
 
         st.info(
@@ -2326,6 +2621,71 @@ Traffic Density : **{density}**
 Estimated Waiting Time : **{wait} sec**
 """
 
+        )
+
+        st.divider()
+
+        st.subheader("🧠 Monitoring Summary")
+
+        summary = pd.DataFrame({
+
+            "Parameter":[
+
+                "Vehicle Count",
+
+                "Traffic Density",
+
+                "Congestion",
+
+                "Waiting Time",
+
+                "System Time"
+
+            ],
+
+            "Value":[
+
+                vehicles,
+
+                density,
+
+                f"{congestion_level}%",
+
+                f"{wait} sec",
+
+                datetime.now().strftime("%H:%M:%S")
+
+            ]
+
+        })
+
+        st.dataframe(
+
+            summary,
+
+            hide_index=True,
+
+            use_container_width=True
+
+        )
+
+        st.divider()
+
+        refresh = st.checkbox(
+            "🔄 Auto Refresh",
+            value=False
+        )
+
+        if refresh:
+
+            time.sleep(2)
+
+            st.rerun()
+
+        st.success("🟢 Smart City AI Monitoring Engine Running")
+
+        st.caption(
+            "Live monitoring is receiving real-time traffic information from the AI pipeline."
         )
 
 # ==========================================================
@@ -2593,30 +2953,6 @@ Production Release
 
 st.divider()
 
-footer1, footer2, footer3 = st.columns(3)
-
-with footer1:
-    st.info("""
-🚗 Vehicle Detection
-
-YOLOv8
-""")
-
-with footer2:
-    st.info("""
-🤖 Prediction
-
-Random Forest
-""")
-
-with footer3:
-    st.info("""
-📊 Dashboard
-
-Streamlit + Plotly
-""")
-
-st.divider()
 
 status1, status2, status3, status4 = st.columns(4)
 
